@@ -1,11 +1,16 @@
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import CameraStyle from '../styles/CameraStyle'
+import CustomButton from '../components/CustomButton';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Image } from 'react-native';
 
-export default function CameraScreen() {
+export default function CameraScreen({navigation}) {
   const [facing, setFacing] = useState('back');
   const [permission, requestPermission] = useCameraPermissions();
+    const [pictureUri, setPictureUri] = useState(null)
+    const cameraRef = useRef(null)
 
   if (!permission) {
     // Camera permissions are still loading.
@@ -26,15 +31,38 @@ export default function CameraScreen() {
     setFacing(current => (current === 'back' ? 'front' : 'back'));
   }
 
+  const retake = () =>{
+    setPictureUri(null)
+  }
+
+  const takePicture = async () =>{
+    if(cameraRef.current){
+        const photo = await cameraRef.current.takePictureAsync();
+        setPictureUri(photo.uri)
+    }
+  }
+
   return (
-    <View style={CameraStyle.container}>
-      <CameraView style={CameraStyle.camera} facing={facing}>
-        <View style={CameraStyle.buttonContainer}>
-          <TouchableOpacity style={CameraStyle.button} onPress={toggleCameraFacing}>
-            <Text style={CameraStyle.text}>Flip Camera</Text>
-          </TouchableOpacity>
-        </View>
-      </CameraView>
-    </View>
+    <SafeAreaView style={CameraStyle.container}>
+      {pictureUri ? (
+        <>
+          <Image source={{ uri: pictureUri }} style={CameraStyle.camera} />
+          <View style={CameraStyle.buttonBottom}>
+            <CustomButton btnText="Retake" btnOnPress={retake} />
+          </View>
+        </>
+      ) : (
+        <CameraView style={CameraStyle.camera} facing={facing} ref={cameraRef}>
+          <View style={CameraStyle.buttonContainer}>
+            <TouchableOpacity style={CameraStyle.button}>
+              <CustomButton btnText={"Flip"} btnOnPress={toggleCameraFacing}/>
+            </TouchableOpacity>
+            <TouchableOpacity style={CameraStyle.button}>
+              <CustomButton btnText="Take Picture" btnOnPress={takePicture}/>
+            </TouchableOpacity>
+          </View>
+        </CameraView>
+      )}
+    </SafeAreaView>
   );
 }

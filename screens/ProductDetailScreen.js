@@ -14,7 +14,7 @@ const ProductDetailScreen = ({navigation}) => {
       <Text>{selectedProduct.category}</Text>
       <Text>{selectedProduct.description}</Text>
       <View style={{marginTop: 20}} >
-        <CustomButton btnText="Open Camera" btnOnPress={()=>{NavigationActivation.navigate('Camera')}}/>
+        <CustomButton btnText="Open Camera" btnOnPress={()=>{navigation.navigate('Camera')}}/>
       </View>
     </View>
   )
