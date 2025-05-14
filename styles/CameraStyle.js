@@ -7,7 +7,7 @@ export default CameraStyle = StyleSheet.create({
   },
   message: {
     textAlign: 'center',
-    paddingBottom: 10,
+    paddingBottom: 12,
   },
   camera: {
     flex: 1,
